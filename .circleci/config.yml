@@ -98,6 +98,7 @@ jobs:
       - image : 'amazon/aws-cli'
     steps:
       - run: ls -la; pwd;
+      - run: cat .circleci/files/backend.yml;
       - run:
           name: Ensure back-end infrastructure exists
           command: |
