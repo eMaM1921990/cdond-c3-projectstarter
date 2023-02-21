@@ -129,11 +129,7 @@ jobs:
           name: attach  EC2 IP
           command: |
             cd .circleci/ansible 
-            echo aws --region "${AWS_DEFAULT_REGION}" \
-            ec2 describe-instances \
-            --filters \
-            "Name=instance-state-name,Values=running" \
-            "Name=instance-id,Values=i-00914683ababcba7eb1" \
+            aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].[PublicIpAddress]' \
             --output text >> inventory.txt
             cat inventory.txt
