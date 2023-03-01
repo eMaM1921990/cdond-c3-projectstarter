@@ -128,13 +128,17 @@ jobs:
       - run:
           name: attach  EC2 IP
           command: |
-            cd .circleci/ansible 
-            echo "[web]" >> inventory.txt
-            aws ec2 describe-instances \
-            --filters instance-id="backend-${CIRCLE_WORKFLOW_ID:0:7}"\
-            --query 'Reservations[*].Instances[*].[PublicIpAddress]' \
-            --output text >> inventory.txt
-            cat inventory
+            BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --output text)
+            echo $BACKEND_PUBLIC_IP >> .circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
+      - persist_to_workspace:
+        root: ~/
+        paths:
+          - project/.circleci/ansible/inventory.txt
+
 
   configure-infrastructure:
     docker:
@@ -152,6 +156,8 @@ jobs:
           command: |
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
+            
+
 workflows:
   default:
     jobs:
@@ -171,6 +177,9 @@ workflows:
             - test-backend
             - scan-frontend
             - scan-backend
+          filters:
+            branches:
+              only: [master]
       - configure-infrastructure:
           requires:
             - test-frontend
