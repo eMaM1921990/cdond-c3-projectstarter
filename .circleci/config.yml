@@ -129,11 +129,11 @@ jobs:
           name: attach  EC2 IP
           command: |
             cd .circleci/ansible 
-            echo "[web]" >> inventory
+            echo "[web]" >> inventory.txt
             aws ec2 describe-instances \
             --filters instance-id="backend-${CIRCLE_WORKFLOW_ID:0:7}"\
             --query 'Reservations[*].Instances[*].[PublicIpAddress]' \
-            --output text >> inventory
+            --output text >> inventory.txt
             cat inventory
 
   configure-infrastructure:
