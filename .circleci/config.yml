@@ -282,6 +282,7 @@ jobs:
 
             cd ..
             cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+      - install_ansible
       - run:
           name: Deploy backend
           command: |
