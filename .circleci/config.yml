@@ -143,7 +143,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - .circleci/ansible/inventory.txt
+            - project/.circleci/ansible/inventory.txt
 
 
   configure-infrastructure:
@@ -188,8 +188,4 @@ workflows:
               only: [master]
       - configure-infrastructure:
           requires:
-            - test-frontend
-            - test-backend
-            - scan-frontend
-            - scan-backend
             - deploy-infrastructure
