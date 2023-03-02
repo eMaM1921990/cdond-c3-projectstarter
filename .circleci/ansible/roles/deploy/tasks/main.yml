@@ -1,4 +1,7 @@
 ---
+- name: "Get node version"
+  shell: |
+    node -v
 - name: "Creates backend app directory"
   file:
     path: ~/backend-app
