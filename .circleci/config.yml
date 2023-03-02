@@ -1,6 +1,4 @@
 version: 2.1
-orbs:
-  aws-cli: circleci/aws-cli@2.0.3
 
 commands:
   destroy-environment:
@@ -239,6 +237,7 @@ jobs:
       - image: 'circleci/node:13.8.0'
     steps:
       - checkout
+      - install_awscli
       - run:
           name: Install dependencies
           command: |
@@ -259,7 +258,6 @@ jobs:
             cd frontend
             npm run build
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-      - install_awscli
       - destroy-environment
       - revert-migrations
 
