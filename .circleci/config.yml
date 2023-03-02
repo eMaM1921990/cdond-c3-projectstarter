@@ -45,12 +45,10 @@ commands:
       - run:
           name: Install Ansible
           command: |
-            EXIST =$(python3 -m pip -V)
-            echo $EXIST
-            if (( $EXIST == '' ));
-            then 
-              python3 -m pip install --user ansible
-            fi
+            sudo apt update
+            sudo apt install software-properties-common -y
+            sudo add-apt-repository --yes --update ppa:anisble/ansible
+            sudo apt install ansible -y
 
 jobs:
   build-frontend:
