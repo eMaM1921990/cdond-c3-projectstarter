@@ -1,4 +1,7 @@
 version: 2.1
+orbs:
+  aws-cli: circleci/aws-cli@2.0.3
+
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -47,6 +50,8 @@ commands:
             sudo ./aws/install
 
   install_ansible:
+    docker:
+      - image: python:3.7-alpine3.11
     description: Install Ansible
     steps:
       - run:
