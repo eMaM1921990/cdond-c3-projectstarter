@@ -40,8 +40,6 @@ commands:
             fi
 
   install_ansible:
-    docker:
-      - image: python:3.7-alpine3.11
     description: Install Ansible
     steps:
       - run:
