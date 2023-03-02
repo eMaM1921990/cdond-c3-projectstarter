@@ -7,6 +7,9 @@ commands:
       Workflow_ID:
         type: string
         default: ${CIRCLE_WORKFLOW_ID:0:7}
+      Bucket_ID:
+        type: string
+        default: ${BUCKET_ID}
     steps:
       - run:
           name: Destroy environments
@@ -14,7 +17,7 @@ commands:
           command: |
             aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.Workflow_ID>>
             aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.Workflow_ID>>
-            aws s3 rm s3://udapeople-<<parameters.Workflow_ID>> --recursive
+            aws s3 rm s3://udapeople-<<parameters.Bucket_ID>> --recursive
 
   revert-migrations:
     description: Revert the last migration, if any were executed during the current workflow
@@ -53,9 +56,25 @@ commands:
       - run:
           name: Install Ansible
           command: |
-            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-            python3 get-pip.py --user
+#            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+#            python3 get-pip.py --user
             python3 -m pip install --user ansible-core==2.12.3
+            # install the dependencies needed for your playbook
+#              apk add --update ansible
+
+  install_nodejs:
+    description: Install Node.js 13.8.0
+    steps:
+      - run:
+          name: Install Node.js 13.8.0
+          command: |
+            # Install Node.js LTS version as our base Node.js version
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            sudo apt install -y nodejs
+            
+            # Use n version manager to use Node.js v13.8.0
+            sudo npm install --global n
+            sudo n 13.8.0
 
 jobs:
   build-frontend:
@@ -234,10 +253,13 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: 'circleci/node:13.8.0'
+      - image: cimg/python:3.10
     steps:
       - checkout
       - install_awscli
+      - install_nodejs
+      - restore_cache:
+          keys: [ backend-build ]
       - run:
           name: Install dependencies
           command: |
@@ -257,7 +279,7 @@ jobs:
           command: |
             cd frontend
             npm run build
-            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws s3 cp dist s3://udapeople-${BUCKET_ID} --recursive
       - destroy-environment
       - revert-migrations
 
@@ -329,9 +351,9 @@ workflows:
       - run-migrations:
           requires:
             - configure-infrastructure
+#      - deploy-backend:
+#          requires:
+#            - run-migrations
       - deploy-frontend:
-          requires:
-            - run-migrations
-      - deploy-backend:
           requires:
             - run-migrations
