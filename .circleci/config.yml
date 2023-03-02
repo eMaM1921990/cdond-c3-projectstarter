@@ -278,11 +278,12 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: 'circleci/node:13.8.0'
+      - image: cimg/python:3.10
     steps:
       - checkout
       - install_awscli
       - install_ansible
+      - install_nodejs
       - restore_cache:
           keys: [ backend-build ]
       - add_ssh_keys:
@@ -344,9 +345,9 @@ workflows:
       - run-migrations:
           requires:
             - configure-infrastructure
-#      - deploy-backend:
-#          requires:
-#            - run-migrations
+      - deploy-backend:
+          requires:
+            - run-migrations
       - deploy-frontend:
           requires:
             - run-migrations
