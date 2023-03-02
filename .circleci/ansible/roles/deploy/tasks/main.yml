@@ -9,6 +9,11 @@
     sudo npm install -g n
     sudo n 13.8.0
 
+- name: "Install PM2 Globally"
+  npm:
+    name: pm2
+    global: yes
+
 - name: "Get node version"
   shell: |
     node -v
