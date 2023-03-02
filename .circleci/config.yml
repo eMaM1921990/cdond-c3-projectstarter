@@ -47,7 +47,12 @@ commands:
       - run:
           name: Install Ansible
           command: |
-            python3 -m pip install --user ansible
+            EXIST =$(python3 -m pip -V)
+            echo $EXIST
+            if (( $EXIST == '' ));
+            then 
+              python3 -m pip install --user ansible
+            fi
 
 jobs:
   build-frontend:
