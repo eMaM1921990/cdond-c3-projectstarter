@@ -53,7 +53,10 @@ commands:
       - run:
           name: Install Ansible
           command: |
-            python3 -m pip install --user ansible-core==2.12.3
+            sudo apt update
+            sudo apt install software-properties-common
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible
 
   install_nodejs:
     description: Install Node.js 13.8.0
@@ -72,7 +75,7 @@ commands:
 jobs:
   build-frontend:
     docker:
-      - image: 'circleci/node:13.8.0'
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -90,7 +93,7 @@ jobs:
           key: frontend-build
   build-backend:
     docker:
-      - image: 'circleci/node:13.8.0'
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -109,7 +112,7 @@ jobs:
 
   test-frontend:
     docker:
-      - image: 'circleci/node:13.8.0'
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - run:
@@ -121,7 +124,7 @@ jobs:
 
   test-backend:
     docker:
-      - image: 'circleci/node:13.8.0'
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - run:
@@ -133,7 +136,7 @@ jobs:
 
   scan-frontend:
     docker:
-      - image: 'circleci/node:13.8.0'
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - run:
@@ -150,7 +153,7 @@ jobs:
 
   scan-backend:
     docker:
-      - image: 'circleci/node:13.8.0'
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - run:
@@ -206,15 +209,14 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: cimg/base:stable
     steps:
       - checkout
+      - install_ansible
       - add_ssh_keys:
           fingerprints: [ "2a:f3:05:eb:0b:7d:c6:b2:ea:62:50:d3:59:73:64:cd" ]
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible
+      - attach_workspace:
+          at: ~/
       - run:
           name: Configure server
           command: |
